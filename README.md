@@ -8,6 +8,8 @@
  - Status
  - Players
 
+### Startup Instructions
+1. Create a new bot on BotFather and obtain the token. [Create Telegram Chatbot](https://sendpulse.com/knowledge-base/chatbot/telegram/create-telegram-chatbot) 
    
 # The result of the bot's work
 
