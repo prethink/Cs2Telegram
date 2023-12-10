@@ -98,21 +98,4 @@ public class TelegramCore : BasePlugin
 
         return HookResult.Continue;
     }
-
-    [GameEventHandler]
-    public HookResult OnPlayerConnect(EventPlayerConnect @event, GameEventInfo info)
-    {
-        if (!@event.Bot)
-        {
-            var playerName = @event.Name;
-            string msg = $"Player connect {playerName}";
-            foreach (var admin in _bot.Config.Admins)
-            {
-                Helper.SendMessage(_bot.botClient, admin, msg);
-            }
-
-        }
-
-        return HookResult.Continue;
-    }
 }
