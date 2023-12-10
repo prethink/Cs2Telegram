@@ -17,6 +17,15 @@
 
 If you want the bot to be used only by you, add your Telegram user ID to the "WhiteListUsers" field. [Get my id](https://t.me/getmyid_bot) To add an administrator, use the "Admins" field.
 
+#### telegramconfig.json
+
+{       
+  "Token": "",       
+  "Admins": [],       
+  "WhiteListUsers": [],       
+  "ClearUpdatesOnStart": true,       
+  "BotId": 0       
+}       
    
 # The result of the bot's work
 
