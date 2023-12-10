@@ -25,7 +25,13 @@ If you want the bot to be used only by you, add your Telegram user ID to the "Wh
   "WhiteListUsers": [],       
   "ClearUpdatesOnStart": true,       
   "BotId": 0       
-}       
+}    
+
+Token - Key for interacting with the bot.       
+Admins - List of administrators.       
+WhiteListUsers - List of users who can use the bot. If the value is empty, all users can use the bot.       
+ClearUpdatesOnStart - Clears commands that were invoked when the bot was not running.       
+BotId - Unique identifier of the bot. May be required if multiple bots are used in the same application.          
    
 # The result of the bot's work
 
