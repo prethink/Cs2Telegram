@@ -5,7 +5,7 @@ Tested on Windows, not tested on Linux yet.
 ### Bot Functionality
 - View server status
 - View players on the server
-- Notifications to the administrator if the server is shutting down
+
 
 ### Bot Commands:
  - Status
