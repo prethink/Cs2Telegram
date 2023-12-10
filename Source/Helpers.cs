@@ -1,4 +1,5 @@
 ﻿using CounterStrikeSharp.API.Core;
+using PRTelegramBot.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +11,13 @@ namespace Cs2Telegram
 {
     public static class Helper
     {
-        public static void SendMessage(ITelegramBotClient botClient,long userId, string msg)
+        public static void SendMessage(ITelegramBotClient botClient,long userId, string msg, OptionMessage options = null)
         {
             Task task = Task.Run(async () =>
             {
                 try
                 {
-                    var sendMessage = await PRTelegramBot.Helpers.Message.Send(botClient, userId, msg);
+                    var sendMessage = await PRTelegramBot.Helpers.Message.Send(botClient, userId, msg, options);
                 }
                 catch (Exception ex)
                 {

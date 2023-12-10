@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <InvariantGlobalization>true</InvariantGlobalization>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,13 +14,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="CounterStrikeSharp.API">
-      <HintPath>..\csharp\api\CounterStrikeSharp.API.dll</HintPath>
-    </Reference>
+    <None Remove="C:\Users\user\.nuget\packages\prtelegrambot\0.4.7\build\\README.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="C:\Users\user\.nuget\packages\prtelegrambot\0.4.7\build\\README.txt" />
+    <Reference Include="CounterStrikeSharp.API">
+      <HintPath>..\dll\CounterStrikeSharp.API.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

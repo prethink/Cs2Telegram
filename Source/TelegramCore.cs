@@ -21,6 +21,8 @@ public class TelegramCore : BasePlugin
 
     private PRBot _bot;
 
+
+
     public override void Load(bool hotReload)
     {
         var config = GetOrCreateConfig();
@@ -87,15 +89,16 @@ public class TelegramCore : BasePlugin
     public override string ModuleAuthor => "PreThink";
 
 
-    [GameEventHandler(HookMode.Pre)]
-    public HookResult OnServerShutDown(EventServerShutdown @event, GameEventInfo info)
-    {
-        string msg = $"🌐 Server is shutdown";
-        foreach (var admin in _bot.Config.Admins)
-        {
-            Helper.SendMessage(_bot.botClient, admin, msg);
-        }
+    //[GameEventHandler(HookMode.Pre)]
+    //public HookResult OnServerShutDown(EventServerShutdown @event, GameEventInfo info)
+    //{
+    //    string msg = $"🌐 Server is shutdown\nReason:{@event.Reason}";
+        
+    //    foreach (var admin in _bot.Config.Admins)
+    //    {
+    //        Helper.SendMessage(_bot.botClient, admin, msg);
+    //    }
 
-        return HookResult.Continue;
-    }
+    //    return HookResult.Continue;
+    //}
 }
