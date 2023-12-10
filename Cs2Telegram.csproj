@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <InvariantGlobalization>true</InvariantGlobalization>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Version>0.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
