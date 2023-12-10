@@ -1,4 +1,7 @@
 # Cs2Telegram
+
+Tested on Windows, not tested on Linux yet.
+
 ### Bot Functionality
 - View server status
 - View players on the server
