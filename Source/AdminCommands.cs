@@ -14,7 +14,7 @@ namespace Cs2Telegram
         public static async Task AccessDenied(ITelegramBotClient botClient, Update update)
         {
             string msg = "Access denied";
-            await Helper.SendMessage(botClient, update.GetChatId(), msg);
+            Helper.SendMessage(botClient, update.GetChatId(), msg);
         }
     }
 }
