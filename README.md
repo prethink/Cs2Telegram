@@ -20,4 +20,4 @@ If you want the bot to be used only by you, add your Telegram user ID to the "Wh
    
 # The result of the bot's work
 
-![My Image](/doc/BotResult.png)
+![BotResult](/doc/BotResult.png)
