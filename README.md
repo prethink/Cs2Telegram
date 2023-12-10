@@ -10,6 +10,7 @@ Tested on Windows, not tested on Linux yet.
 ### Bot Commands:
  - Status
  - Players
+ - Menu
 
 ### Startup Instructions
 1. Create a new bot on BotFather and obtain the token. [Create Telegram Chatbot](https://sendpulse.com/knowledge-base/chatbot/telegram/create-telegram-chatbot)
