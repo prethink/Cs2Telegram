@@ -32,10 +32,6 @@ namespace Cs2Telegram
             var menu = new List<string>();
             menu.Add("Status");
             menu.Add("Players");
-            if(botClient.IsAdmin(update.GetChatId()))
-            {
-                menu.Add("MapList");
-            }
 
             var generateMenu = MenuGenerator.ReplyKeyboard(1, menu);
             options.MenuReplyKeyboardMarkup = generateMenu;
