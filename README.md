@@ -22,14 +22,13 @@ Tested on Windows server 2022 and ubuntu 22.
 
 
 ### Bot Commands:
- - Status
- - Players
- - Menu
+- Status
+- Players
+- Menu
 - Admin menu *(Only for admins)
 - Server command *(Only for admins)
- - Generate inline menu favorite commands from file favorite_server_command.txt
+   * Generate inline menu favorite commands from file favorite_server_command.txt
 - Server message *(Only for admins)
-
 
 ### Startup Instructions
 1. Create a new bot on BotFather and obtain the token. [Create Telegram Chatbot](https://sendpulse.com/knowledge-base/chatbot/telegram/create-telegram-chatbot)
