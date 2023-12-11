@@ -18,7 +18,7 @@ namespace Cs2Telegram;
 public class TelegramCore : BasePlugin
 {
     public override string ModuleName => "Cs2Telegram";
-    public override string ModuleVersion => "0.1";
+    public override string ModuleVersion => "0.2.0";
     public override string ModuleAuthor => "PreThink";
 
     const string FILE_CONFIG = "telegramconfig.json";
