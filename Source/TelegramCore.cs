@@ -17,6 +17,10 @@ namespace Cs2Telegram;
 
 public class TelegramCore : BasePlugin
 {
+    public override string ModuleName => "Cs2Telegram";
+    public override string ModuleVersion => "0.2.0";
+    public override string ModuleAuthor => "PreThink";
+
     const string FILE_CONFIG = "telegramconfig.json";
 
     private PRBot _bot;
@@ -82,23 +86,4 @@ public class TelegramCore : BasePlugin
         Console.WriteLine(message);
         Console.ResetColor();
     }
-
-
-    public override string ModuleName => "Cs2Telegram";
-    public override string ModuleVersion => "0.1";
-    public override string ModuleAuthor => "PreThink";
-
-
-    //[GameEventHandler(HookMode.Pre)]
-    //public HookResult OnServerShutDown(EventServerShutdown @event, GameEventInfo info)
-    //{
-    //    string msg = $"🌐 Server is shutdown\nReason:{@event.Reason}";
-        
-    //    foreach (var admin in _bot.Config.Admins)
-    //    {
-    //        Helper.SendMessage(_bot.botClient, admin, msg);
-    //    }
-
-    //    return HookResult.Continue;
-    //}
 }

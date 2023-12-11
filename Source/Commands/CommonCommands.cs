@@ -12,9 +12,9 @@ using PRTelegramBot.Models;
 using PRTelegramBot.Helpers.TG;
 using PRTelegramBot.Extensions;
 
-namespace Cs2Telegram
+namespace Cs2Telegram.Commands
 {
-    public class Commands
+    public static class CommonCommands
     {
         [ReplyMenuHandler("start")]
         [SlashHandler("/start")]
@@ -23,22 +23,21 @@ namespace Cs2Telegram
             await Menu(botClient, update);
         }
 
-        [ReplyMenuHandler("Menu", "Меню")]
-        [SlashHandler("/Menu")]
+        [ReplyMenuHandler(Constants.MAIN_MENU_BUTTON)]
+        [SlashHandler(Constants.SLASH_MENU_BUTTON)]
         public static async Task Menu(ITelegramBotClient botClient, Update update)
         {
-            var options = new OptionMessage();
 
-            var menu = new List<string>();
-            menu.Add("Status");
-            menu.Add("Players");
-
-            var generateMenu = MenuGenerator.ReplyKeyboard(1, menu);
-            options.MenuReplyKeyboardMarkup = generateMenu;
-            await PRTelegramBot.Helpers.Message.Send(botClient, update, "Server menu", options);
+            Server.NextFrame(async () =>
+            {
+                var options = new OptionMessage();
+                options.MenuReplyKeyboardMarkup = botClient.GenerateCommonMenu(update.GetChatId());
+                await PRTelegramBot.Helpers.Message.Send(botClient, update, "Main menu", options);
+                update.ClearStepUser();
+            });
         }
 
-        [ReplyMenuHandler("Status", "Статус")]
+        [ReplyMenuHandler(Constants.STATUS_BUTTON)]
         public static async Task Status(ITelegramBotClient botClient, Update update)
         {
             Server.NextFrame(async () =>
@@ -55,7 +54,7 @@ namespace Cs2Telegram
 
                     var hostnameCvar = ConVar.Find("hostname");
 
-                    if(hostnameCvar != null)
+                    if (hostnameCvar != null)
                     {
                         hostname = hostnameCvar.StringValue;
                     }
@@ -67,16 +66,19 @@ namespace Cs2Telegram
                         $"🗺️ Map: {mapName}\n" +
                         $"🕛 Server Uptime: {TimeSpan.FromSeconds(serverTime).ToReadableString()}  ";
 
-                    await PRTelegramBot.Helpers.Message.Send(botClient, update, msg);
+                    var options = new OptionMessage();
+                    options.MenuReplyKeyboardMarkup = botClient.GenerateCommonMenu(update.GetChatId());
+
+                    await PRTelegramBot.Helpers.Message.Send(botClient, update, msg, options);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex);
                 }
             });
         }
 
-        [ReplyMenuHandler("Players", "Игроки")]
+        [ReplyMenuHandler(Constants.PLAYERS_BUTTON)]
         public static async Task Players(ITelegramBotClient botClient, Update update)
         {
             Server.NextFrame(async () =>
@@ -85,9 +87,11 @@ namespace Cs2Telegram
                 {
                     var players = Utilities.GetPlayers();
                     string message = "Players on server:";
-                    if(players.Count == 0)
+                    var options = new OptionMessage();
+                    options.MenuReplyKeyboardMarkup = botClient.GenerateCommonMenu(update.GetChatId());
+                    if (players.Count == 0)
                     {
-                        await PRTelegramBot.Helpers.Message.Send(botClient, update, "No players :(");
+                        await PRTelegramBot.Helpers.Message.Send(botClient, update, "No players :(", options);
                     }
                     else
                     {
@@ -96,7 +100,7 @@ namespace Cs2Telegram
                             message += $"\n {(player.IsBot ? "🤖" : "👦")} {player.PlayerName}";
                         }
 
-                        await PRTelegramBot.Helpers.Message.Send(botClient, update, message);
+                        await PRTelegramBot.Helpers.Message.Send(botClient, update, message, options);
                     }
                 }
                 catch (Exception ex)
