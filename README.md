@@ -5,21 +5,17 @@ Tested on Windows, not tested on Linux yet.
 ### Bot Functionality
 - View server status
 - View players on the server
-- Send server command
-- Send server message
+- Send server command *(Only for admins)
+- Send server message *(Only for admins)
 
 
 ### Bot Commands:
-#### Common commands
  - Status
  - Players
  - Menu
-
-#### Admin commands
-
-- Admin menu
-- Server command
-- Server message
+- Admin menu *(Only for admins)
+- Server command *(Only for admins)
+- Server message *(Only for admins)
 
 
 ### Startup Instructions
