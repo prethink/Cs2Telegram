@@ -27,6 +27,7 @@ Tested on Windows server 2022 and ubuntu 22.
  - Menu
 - Admin menu *(Only for admins)
 - Server command *(Only for admins)
+ - Generate inline menu favorite commands from file favorite_server_command.txt
 - Server message *(Only for admins)
 
 
