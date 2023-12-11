@@ -2,6 +2,9 @@
 
 Tested on Windows server 2022 and ubuntu 22.
 
+# ⚠️ WARNING
+*For proper operation, it is required to disable the hibernate mode on the server. To do this, specify sv_hibernate_when_empty 0 in the server config.*
+
 ## Requirements
  - [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp/tree/main)
  - [PRTelegramBot](https://github.com/prethink/PRTelegramBot)
