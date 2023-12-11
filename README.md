@@ -3,10 +3,10 @@
 Tested on Windows, not tested on Linux yet.
 
 ## Requirements
- - [CounterStrikeSharp] (https://github.com/roflmuffin/CounterStrikeSharp/tree/main)
- - [PRTelegramBot] (https://github.com/prethink/PRTelegramBot)
- - [Telegram.Bot] (https://github.com/TelegramBots/Telegram.Bot)
- - [Newtonsoft.Json] (https://github.com/JamesNK/Newtonsoft.Json) 
+ - [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp/tree/main)
+ - [PRTelegramBot](https://github.com/prethink/PRTelegramBot)
+ - [Telegram.Bot](https://github.com/TelegramBots/Telegram.Bot)
+ - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)       
 
 
 ### Bot Functionality
