@@ -8,9 +8,17 @@ Tested on Windows, not tested on Linux yet.
 
 
 ### Bot Commands:
+#### Common commands
  - Status
  - Players
  - Menu
+
+#### Admin commands
+
+- Admin menu
+- Server command
+- Server message
+
 
 ### Startup Instructions
 1. Create a new bot on BotFather and obtain the token. [Create Telegram Chatbot](https://sendpulse.com/knowledge-base/chatbot/telegram/create-telegram-chatbot)
