@@ -35,14 +35,24 @@ namespace Cs2Telegram.Commands
             Helper.SendMessage(botClient, update, msg, options);
         }
 
+        [RequiredTypeChat(Telegram.Bot.Types.Enums.ChatType.Private)]
+        [RequireTypeMessage(Telegram.Bot.Types.Enums.MessageType.Text)]
         public static async Task ExecuteCommandInServerHandler(ITelegramBotClient botClient, Update update, CustomParameters args)
         {
-            string msg = update.Message.Text;
-            Server.NextFrame(() =>
+            string msg = update?.Message?.Text;
+            if(!string.IsNullOrWhiteSpace(msg))
             {
-                Server.ExecuteCommand(msg);
-            });
-            Helper.SendMessage(botClient, update, $"🗯️ Server try execute command: {msg}\n\n{SERVER_COMMAND_MSG}");
+                Server.NextFrame(() =>
+                {
+                    Server.ExecuteCommand(msg);
+                });
+                Helper.SendMessage(botClient, update, $"🗯️ Server try execute command: {msg}\n\n{SERVER_COMMAND_MSG}");
+            }
+            else
+            {
+                Helper.SendMessage(botClient, update, $"Error empty message, try again");
+            }
+
         }
 
         [ReplyMenuHandler(Constants.SERVER_SEND_MESSAGE_BUTTON)]
@@ -61,14 +71,23 @@ namespace Cs2Telegram.Commands
             Helper.SendMessage(botClient, update, msg, options);
         }
 
+        [RequiredTypeChat(Telegram.Bot.Types.Enums.ChatType.Private)]
+        [RequireTypeMessage(Telegram.Bot.Types.Enums.MessageType.Text)]
         public static async Task SendMessageToServerHandler(ITelegramBotClient botClient, Update update, CustomParameters args)
         {
-            string msg = update.Message.Text;
-            Server.NextFrame(() =>
+            string msg = update?.Message?.Text;
+            if (!string.IsNullOrWhiteSpace(msg))
             {
-                Server.PrintToChatAll(msg);
-            });
-            Helper.SendMessage(botClient, update, $"💬 Server send message: {msg}\n\n{SERVER_SEND_MSG}");
+                Server.NextFrame(() =>
+                {
+                    Server.PrintToChatAll(msg);
+                });
+                Helper.SendMessage(botClient, update, $"💬 Server send message: {msg}\n\n{SERVER_SEND_MSG}");
+            }
+            else
+            {
+                Helper.SendMessage(botClient, update, $"Error empty message, try again");
+            }
         }
     }
 }

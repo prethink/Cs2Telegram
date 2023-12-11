@@ -42,7 +42,6 @@ namespace Cs2Telegram.Commands
                 var options = new OptionMessage();
                 options.MenuReplyKeyboardMarkup = botClient.GenerateAdminMenu(update.GetChatId());
                 await PRTelegramBot.Helpers.Message.Send(botClient, update, "Admin menu", options);
-                update.ClearStepUser();
             });
 
         }

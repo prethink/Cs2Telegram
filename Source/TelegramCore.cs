@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using File = System.IO.File;
 using CounterStrikeSharp.API.Modules.Memory;
 using PRTelegramBot.Helpers;
+using Cs2Telegram.TelegramEvents;
 
 namespace Cs2Telegram;
 
@@ -37,6 +38,7 @@ public class TelegramCore : BasePlugin
         _bot.OnLogError += Telegram_OnLogError;
         // Start the bot
         _bot.Start();
+        HandlerInit(_bot);
     }
 
     private TelegramConfig GetOrCreateConfig()
@@ -85,5 +87,18 @@ public class TelegramCore : BasePlugin
         string message = $"{DateTime.Now}:{msg}";
         Console.WriteLine(message);
         Console.ResetColor();
+    }
+
+    void HandlerInit(PRTelegramBot.Core.PRBot tg)
+    {
+        if (tg.Handler != null)
+        {
+
+            //Обработка не правильный тип сообщений
+            tg.Handler.Router.OnWrongTypeMessage += CommonEvents.WrongMessage;
+
+            //Обработка пропущенной  команды
+            tg.Handler.Router.OnMissingCommand += CommonEvents.OnMissingCommand;
+        }
     }
 }
