@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot;
 using PRTelegramBot.Extensions;
+using PRTelegramBot.Models;
 
 namespace Cs2Telegram.TelegramEvents
 {
@@ -20,7 +21,9 @@ namespace Cs2Telegram.TelegramEvents
         public static async Task OnMissingCommand(ITelegramBotClient botClient, Update update)
         {
             string msg = "Missing Command";
-            Helper.SendMessage(botClient, update.GetChatId(), msg);
+            var options = new OptionMessage();
+            options.MenuReplyKeyboardMarkup = botClient.GenerateCommonMenu(update.GetChatId());
+            Helper.SendMessage(botClient, update.GetChatId(), msg, options);
         }
     }
 }
