@@ -5,6 +5,8 @@ Tested on Windows, not tested on Linux yet.
 ### Bot Functionality
 - View server status
 - View players on the server
+- Send server command
+- Send server message
 
 
 ### Bot Commands:
