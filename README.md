@@ -10,6 +10,8 @@ Tested on Windows, not tested on Linux yet.
 
 
 ### Bot Functionality
+- WhiteList
+- Administrators
 - View server status
 - View players on the server
 - Send server command *(Only for admins)
