@@ -1,6 +1,6 @@
 # Cs2Telegram
 
-Tested on Windows, not tested on Linux yet.
+Tested on Windows server 2022 and ubuntu 22.
 
 ## Requirements
  - [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp/tree/main)
