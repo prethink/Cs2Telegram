@@ -19,18 +19,21 @@ namespace Cs2Telegram;
 public class TelegramCore : BasePlugin
 {
     public override string ModuleName => "Cs2Telegram";
-    public override string ModuleVersion => "0.2.0";
+    public override string ModuleVersion => "0.2.1";
     public override string ModuleAuthor => "PreThink";
 
-    const string FILE_CONFIG = "telegramconfig.json";
+    public static string PluginPath { get; set; } = "";
+
+    public const string FILE_CONFIG            = "telegramconfig.json";
+    public const string FILE_SERVER_COMMANDS   = "favorite_server_command.txt";
 
     private PRBot _bot;
-
 
 
     public override void Load(bool hotReload)
     {
         var config = GetOrCreateConfig();
+        PluginPath = ModuleDirectory;
         _bot = new PRBot(config);
         // Subscribe to basic logs
         _bot.OnLogCommon += Telegram_OnLogCommon;

@@ -11,5 +11,6 @@ namespace Cs2Telegram.Models
     public enum HeadersCommads
     {
         SelectMap = 0,
+        ExecuteServerCommand = 1,
     }
 }
