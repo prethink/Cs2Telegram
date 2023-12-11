@@ -33,7 +33,6 @@ namespace Cs2Telegram.Commands
                 var options = new OptionMessage();
                 options.MenuReplyKeyboardMarkup = botClient.GenerateCommonMenu(update.GetChatId());
                 await PRTelegramBot.Helpers.Message.Send(botClient, update, "Main menu", options);
-                update.ClearStepUser();
             });
         }
 
