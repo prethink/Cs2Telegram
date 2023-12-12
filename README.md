@@ -42,21 +42,15 @@ Tested on Windows server 2022 and ubuntu 22.
 
 If you want the bot to be used only by you, add your Telegram user ID to the "WhiteListUsers" field. [Get my id](https://t.me/getmyid_bot) To add an administrator, use the "Admins" field.
 
-#### telegramconfig.json
-
-{       
-  "Token": "",       
-  "Admins": [],       
-  "WhiteListUsers": [],       
-  "ClearUpdatesOnStart": true,       
-  "BotId": 0       
-}    
+#### Configuration
+path - ..\csgo\addons\counterstrikesharp\configs\plugins\Cs2Telegram\Cs2Telegram.json     
 
 Token - Key for interacting with the bot.       
 Admins - List of administrators.       
 WhiteListUsers - List of users who can use the bot. If the value is empty, all users can use the bot.       
 ClearUpdatesOnStart - Clears commands that were invoked when the bot was not running.       
-BotId - Unique identifier of the bot. May be required if multiple bots are used in the same application.          
+BotId - Unique identifier of the bot. May be required if multiple bots are used in the same application.  
+ServerCommandsMenuItems - List command for inline buttons        
    
 # The result of the bot's work
 
