@@ -47,17 +47,22 @@ namespace Cs2Telegram.Commands
                     var allCount = botCount + userCount;
                     var maxPlayers = Server.MaxPlayers;
                     string mapName = Server.MapName;
+                    
                     var serverTime = Server.EngineTime;
+                    
                     string hostname = "";
 
                     var hostnameCvar = ConVar.Find("hostname");
-
+                    var gameTypeCvar = ConVar.Find("game_type");
+                    var gameModeCvar = ConVar.Find("game_mode");
+                    string gametype = Helper.GetGameModeWithGameType(gameTypeCvar.GetPrimitiveValue<int>(), gameModeCvar.GetPrimitiveValue<int>()); 
                     if (hostnameCvar != null)
                     {
                         hostname = hostnameCvar.StringValue;
                     }
 
                     var msg = $"🌐 Server '{hostname}':\n" +
+                        $"🕹️ Game mode: {gametype}\n" +
                         $"👨‍👩‍👧‍👦 Players: {allCount}/{maxPlayers}\n" +
                         $"👦 Humans: {userCount}\n" +
                         $"🤖 Bots: {botCount}\n" +

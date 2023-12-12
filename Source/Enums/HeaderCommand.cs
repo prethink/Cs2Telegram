@@ -5,12 +5,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cs2Telegram.Models
+namespace Cs2Telegram.Enums
 {
     [InlineCommand]
-    public enum HeadersCommads
+    public enum HeaderCommand
     {
         SelectMap = 0,
         ExecuteServerCommand = 1,
+        PlayerKick,
+        PlayerChangeTeam,
+        PlayerGiveItem,
+        PlayerSuicide,
+        PlayerRespawn,
+        PlayerInfo,
+        PlayerKill,
+        PlayerInfoList,
     }
 }

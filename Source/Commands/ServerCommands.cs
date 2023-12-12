@@ -16,6 +16,8 @@ using PRTelegramBot.Models.InlineButtons;
 using PRTelegramBot.Models.CallbackCommands;
 using PRTelegramBot.Models.Interface;
 using PRTelegramBot.Helpers.TG;
+using Cs2Telegram.Enums;
+using Cs2Telegram.TelegramEvents;
 
 namespace Cs2Telegram.Commands
 {
@@ -30,28 +32,13 @@ namespace Cs2Telegram.Commands
         {
             if (!botClient.IsAdmin(update.GetChatId()))
             {
-                await AdminCommands.AccessDenied(botClient, update);
+                await CommonEvents.AccessDenied(botClient, update);
                 return;
             }
 
-            var pathCommands = Path.Combine(TelegramCore.PluginPath, TelegramCore.FILE_SERVER_COMMANDS);
 
-            if(!File.Exists(pathCommands))
-            {
-                File.Create(pathCommands);
-            }
 
-            var lines = File.ReadAllLines(pathCommands);
-            var inlineMenuItems = new List<IInlineContent>();
-            if (lines.Length > 0)
-            {
-                foreach (var command in lines.Where(command => !string.IsNullOrWhiteSpace(command)))
-                {
-                    var commandItem = new InlineCallback<ServerExecuteTCommand>(command, HeadersCommads.ExecuteServerCommand, new ServerExecuteTCommand(command));
-                    inlineMenuItems.Add(commandItem);
-                }
-            }
-
+            var inlineMenuItems = Helper.GetServerCommandsItems();
             var options = new OptionMessage();
             if(inlineMenuItems.Count > 0)
             {
@@ -87,12 +74,12 @@ namespace Cs2Telegram.Commands
             }
         }
 
-        [InlineCallbackHandler<HeadersCommads>(HeadersCommads.ExecuteServerCommand)]
+        [InlineCallbackHandler<HeaderCommand>(HeaderCommand.ExecuteServerCommand)]
         public static async Task ExecuteCommandInServerHandler(ITelegramBotClient botClient, Update update)
         {
             if (!botClient.IsAdmin(update.GetChatId()))
             {
-                await AdminCommands.AccessDenied(botClient, update);
+                await CommonEvents.AccessDenied(botClient, update);
                 return;
             }
 
@@ -106,11 +93,17 @@ namespace Cs2Telegram.Commands
                     {
                         Server.ExecuteCommand(serverCommand);
                     });
-                    Helper.SendMessage(botClient, update, $"🗯️ Server try execute command: {serverCommand}\n\n{SERVER_COMMAND_MSG}");
+                    var inlineMenuItems = Helper.GetServerCommandsItems();
+                    var options = new OptionMessage();
+                    if (inlineMenuItems.Count > 0)
+                    {
+                        options.MenuInlineKeyboardMarkup = MenuGenerator.InlineKeyboard(MenuGenerator.InlineButtons(1, inlineMenuItems));
+                    }
+                    Helper.EditMessage(botClient, update, $"🗯️ Server try execute command: {serverCommand}\n\n{SERVER_COMMAND_MSG}\nGuid:{Guid.NewGuid()}", options);
                 }
                 else
                 {
-                    Helper.SendMessage(botClient, update, $"Error empty message, try again");
+                    Helper.EditMessage(botClient, update, $"Error empty message, try again");
                 }
             }
         }
@@ -120,7 +113,7 @@ namespace Cs2Telegram.Commands
         {
             if (!botClient.IsAdmin(update.GetChatId()))
             {
-                await AdminCommands.AccessDenied(botClient, update);
+                await CommonEvents.AccessDenied(botClient, update);
                 return;
             }
 

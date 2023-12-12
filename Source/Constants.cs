@@ -19,6 +19,7 @@ namespace Cs2Telegram
         #region AdminMenu
         public const string SERVER_COMMAND_BUTTON           = "Server command";
         public const string SERVER_SEND_MESSAGE_BUTTON      = "Server message";
+        public const string SERVER_PLAYERS_INFO_BUTTON      = "Players info";
         #endregion
     }
 }

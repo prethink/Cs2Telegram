@@ -13,28 +13,36 @@ using File = System.IO.File;
 using CounterStrikeSharp.API.Modules.Memory;
 using PRTelegramBot.Helpers;
 using Cs2Telegram.TelegramEvents;
+using System.Text.Json.Serialization;
 
 namespace Cs2Telegram;
 
-public class TelegramCore : BasePlugin
+public class Cs2TelegramPlugin : BasePlugin, IPluginConfig<TelegramCfg>
 {
     public override string ModuleName => "Cs2Telegram";
-    public override string ModuleVersion => "0.2.1";
+    public override string ModuleVersion => "0.2.2";
     public override string ModuleAuthor => "PreThink";
-
-    public static string PluginPath { get; set; } = "";
-
-    public const string FILE_CONFIG            = "telegramconfig.json";
-    public const string FILE_SERVER_COMMANDS   = "favorite_server_command.txt";
 
     private PRBot _bot;
 
+    public TelegramCfg Config { get; set; } = new TelegramCfg();
+    public static TelegramCfg GlobalConfig { get; set; } = new TelegramCfg();
+    public void OnConfigParsed(TelegramCfg config)
+    {
+        Config = config;
+        GlobalConfig = config;
+    }
 
     public override void Load(bool hotReload)
     {
-        var config = GetOrCreateConfig();
-        PluginPath = ModuleDirectory;
-        _bot = new PRBot(config);
+        _bot = new PRBot(options =>
+        {
+            options.Token = Config.Token;
+            options.WhiteListUsers = Config.WhiteListUsers;
+            options.Admins = Config.Admins;
+            options.ClearUpdatesOnStart = Config.ClearUpdatesOnStart;
+            options.BotId = Config.BotId;
+        });
         // Subscribe to basic logs
         _bot.OnLogCommon += Telegram_OnLogCommon;
         // Subscribe to error logs
@@ -42,38 +50,6 @@ public class TelegramCore : BasePlugin
         // Start the bot
         _bot.Start();
         HandlerInit(_bot);
-    }
-
-    private TelegramConfig GetOrCreateConfig()
-    {
-        string path = Path.Combine(ModuleDirectory, FILE_CONFIG);
-
-        if(!File.Exists(path))
-        {
-            TelegramConfig telegramConfig = new TelegramConfig
-            {
-                Token = "",
-                Admins = new List<long> { },
-                WhiteListUsers = new List<long> { },
-                ClearUpdatesOnStart = true,
-                BotId = 0
-            };
-
-            string jsonData = JsonConvert.SerializeObject(telegramConfig, Formatting.Indented);
-            File.WriteAllText(path,jsonData);
-            return telegramConfig;
-        }
-        try
-        {
-            var config = JsonConvert.DeserializeObject<TelegramConfig>(File.ReadAllText(path));
-            return config;
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine($"Error while reading the file {FILE_CONFIG}. Error: {ex}");
-            return new TelegramConfig();
-        }
-
     }
 
     private void Telegram_OnLogError(Exception ex, long? id)
@@ -96,7 +72,6 @@ public class TelegramCore : BasePlugin
     {
         if (tg.Handler != null)
         {
-
             //Обработка не правильный тип сообщений
             tg.Handler.Router.OnWrongTypeMessage += CommonEvents.WrongMessage;
 

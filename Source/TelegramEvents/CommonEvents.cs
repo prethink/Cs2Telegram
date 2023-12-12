@@ -13,6 +13,12 @@ namespace Cs2Telegram.TelegramEvents
 {
     public static class CommonEvents
     {
+        public static async Task AccessDenied(ITelegramBotClient botClient, Update update)
+        {
+            string msg = "Access denied";
+            Helper.SendMessage(botClient, update.GetChatId(), msg);
+        }
+
         public static async Task WrongMessage(ITelegramBotClient botClient, Update update)
         {
             string msg = "Wrong Message";

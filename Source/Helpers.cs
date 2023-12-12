@@ -1,8 +1,12 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using Cs2Telegram.Enums;
+using Cs2Telegram.Models;
 using PRTelegramBot.Extensions;
 using PRTelegramBot.Helpers.TG;
 using PRTelegramBot.Models;
+using PRTelegramBot.Models.InlineButtons;
+using PRTelegramBot.Models.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +40,21 @@ namespace Cs2Telegram
             });
         }
 
+        public static void EditMessage(ITelegramBotClient botClient, Update update, string msg, OptionMessage options = null)
+        {
+            Task task = Task.Run(async () =>
+            {
+                try
+                {
+                    var editMessage = await PRTelegramBot.Helpers.Message.Edit(botClient, update, msg, options);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+            });
+        }
+
         public static string ToReadableString(this TimeSpan span)
         {
             string formatted = string.Format("{0}{1}{2}{3}",
@@ -61,7 +80,6 @@ namespace Cs2Telegram
             return MenuGenerator.ReplyKeyboard(1, menu, true, Constants.MAIN_MENU_BUTTON);
         }
 
-
         public static ReplyKeyboardMarkup GenerateCommonMenu(this ITelegramBotClient botClient, long userId)
         {
             int playersCount = Utilities.GetPlayers().Count;
@@ -76,6 +94,20 @@ namespace Cs2Telegram
             return MenuGenerator.ReplyKeyboard(1, menu, true, Constants.MAIN_MENU_BUTTON);
         }
 
+        public static List<IInlineContent> GetServerCommandsItems()
+        {
+            var inlineMenuItems = new List<IInlineContent>();
+            if (Cs2TelegramPlugin.GlobalConfig.ServerCommandsMenuItems.Count > 0)
+            {
+                foreach (var command in Cs2TelegramPlugin.GlobalConfig.ServerCommandsMenuItems.Where(command => !string.IsNullOrWhiteSpace(command)))
+                {
+                    var commandItem = new InlineCallback<ServerExecuteTCommand>(command, HeaderCommand.ExecuteServerCommand, new ServerExecuteTCommand(command));
+                    inlineMenuItems.Add(commandItem);
+                }
+            }
+            return inlineMenuItems;
+        }
+
         public static ReplyKeyboardMarkup GenerateAdminMenu(this ITelegramBotClient botClient, long userId)
         {
             var menu = new List<string>();
@@ -84,6 +116,7 @@ namespace Cs2Telegram
             {
                 menu.Add(Constants.SERVER_COMMAND_BUTTON);
                 menu.Add(Constants.SERVER_SEND_MESSAGE_BUTTON);
+                menu.Add(Constants.SERVER_PLAYERS_INFO_BUTTON);
             }
             else
             {
@@ -92,5 +125,32 @@ namespace Cs2Telegram
 
             return MenuGenerator.ReplyKeyboard(1, menu, true, Constants.MAIN_MENU_BUTTON);
         }
+        public static string GetGameModeWithGameType(int gametype, int gamemode)
+        {
+            //https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive/Game_Modes
+
+            string[][] games = new string[7][];
+
+            games[0] = new string[] { "Casual", "Competitive", "Wingman", "Weapons Expert", "Training Day" };
+            games[1] = new string[] { "Arms Race", "Demolition", "Deathmatch", };
+            games[2] = new string[] { "Training", };
+            games[3] = new string[] { "Custom", };
+            games[4] = new string[] { "Guardian", "Co-op Strike" };
+            games[5] = new string[] { "War Games" };
+            games[6] = new string[] { "Danger Zone" };
+
+            try
+            {
+                return games[gametype][gamemode];
+            }
+            catch(Exception ex)
+            {
+                return "Unknown game type with game mode";
+            }
+        }
+
+
+
+
     }
 }
