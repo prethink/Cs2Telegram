@@ -17,23 +17,18 @@ using PRTelegramBot.Helpers.TG;
 using PRTelegramBot.Helpers;
 using Cs2Telegram.Models;
 using CounterStrikeSharp.API.Modules.Memory;
+using Cs2Telegram.TelegramEvents;
 
 namespace Cs2Telegram.Commands
 {
     public static class AdminCommands
     {
-        public static async Task AccessDenied(ITelegramBotClient botClient, Update update)
-        {
-            string msg = "Access denied";
-            Helper.SendMessage(botClient, update.GetChatId(), msg);
-        }
-
         [ReplyMenuHandler(Constants.ADMIN_MENU_BUTTON)]
         public static async Task AdminMenu(ITelegramBotClient botClient, Update update)
         {
             if (!botClient.IsAdmin(update.GetChatId()))
             {
-                await AccessDenied(botClient, update);
+                await CommonEvents.AccessDenied(botClient, update);
                 return;
             }
 
