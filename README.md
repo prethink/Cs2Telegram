@@ -17,6 +17,7 @@ Tested on Windows server 2022 and ubuntu 22.
 - Administrators
 - View server status
 - View players on the server
+- View players info and actions *(Only for admins)
 - Send server command *(Only for admins)
 - Send server message *(Only for admins)
 
@@ -27,8 +28,10 @@ Tested on Windows server 2022 and ubuntu 22.
 - Menu
 - Admin menu *(Only for admins)
 - Server command *(Only for admins)
-   * Generate inline menu favorite commands from file favorite_server_command.txt
+   * Generate inline menu favorite commands from config Cs2Telegram.json - ServerCommandsMenuItems
 - Server message *(Only for admins)
+-  Players info *(Only for admins)
+   * Actions with players
 
 ### Startup Instructions
 1. Create a new bot on BotFather and obtain the token. [Create Telegram Chatbot](https://sendpulse.com/knowledge-base/chatbot/telegram/create-telegram-chatbot)
