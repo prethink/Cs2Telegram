@@ -18,6 +18,7 @@ using PRTelegramBot.Models.Interface;
 using PRTelegramBot.Helpers.TG;
 using Cs2Telegram.Enums;
 using Cs2Telegram.TelegramEvents;
+using Microsoft.Extensions.Logging;
 
 namespace Cs2Telegram.Commands
 {
@@ -35,8 +36,6 @@ namespace Cs2Telegram.Commands
                 await CommonEvents.AccessDenied(botClient, update);
                 return;
             }
-
-
 
             var inlineMenuItems = Helper.GetServerCommandsItems();
             var options = new OptionMessage();
@@ -66,6 +65,7 @@ namespace Cs2Telegram.Commands
                 {
                     Server.ExecuteCommand(msg);
                 });
+                Cs2TelegramPlugin.Instance.Logger.LogInformation($"TelegramUser [{update.GetInfoUser()}] executed command on server '{msg}'");
                 Helper.SendMessage(botClient, update, $"🗯️ Server try execute command: {msg}\n\n{SERVER_BACK_TO_MENU}");
             }
             else
@@ -93,6 +93,7 @@ namespace Cs2Telegram.Commands
                     {
                         Server.ExecuteCommand(serverCommand);
                     });
+                    Cs2TelegramPlugin.Instance.Logger.LogInformation($"TelegramUser [{update.GetInfoUser()}] executed command on server '{serverCommand}'");
                     var inlineMenuItems = Helper.GetServerCommandsItems();
                     var options = new OptionMessage();
                     if (inlineMenuItems.Count > 0)
@@ -135,6 +136,7 @@ namespace Cs2Telegram.Commands
                 {
                     Server.PrintToChatAll(msg);
                 });
+                Cs2TelegramPlugin.Instance.Logger.LogInformation($"TelegramUser [{update.GetInfoUser()}] sended message on server '{msg}'");
                 Helper.SendMessage(botClient, update, $"💬 Server send message: {msg}\n\n{SERVER_SEND_MSG}");
             }
             else

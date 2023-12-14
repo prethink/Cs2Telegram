@@ -14,27 +14,38 @@ using CounterStrikeSharp.API.Modules.Memory;
 using PRTelegramBot.Helpers;
 using Cs2Telegram.TelegramEvents;
 using System.Text.Json.Serialization;
+using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace Cs2Telegram;
 
-public class Cs2TelegramPlugin : BasePlugin, IPluginConfig<TelegramCfg>
+public partial class Cs2TelegramPlugin : BasePlugin, IPluginConfig<TelegramCfg>
 {
     public override string ModuleName => "Cs2Telegram";
-    public override string ModuleVersion => "0.2.2";
+    public override string ModuleVersion => "0.2.3";
     public override string ModuleAuthor => "PreThink";
 
     private PRBot _bot;
 
     public TelegramCfg Config { get; set; } = new TelegramCfg();
-    public static TelegramCfg GlobalConfig { get; set; } = new TelegramCfg();
+    public static Cs2TelegramPlugin Instance { get; private set; }
+    private string _logsPath = "";
     public void OnConfigParsed(TelegramCfg config)
     {
+        if (config.Version < Config.Version)
+        {
+            Logger.LogWarning($"" +
+                $"\nThe version of the configuration file differs from the required configuration!" +
+                $"\nFile version:{config.Version}" +
+                $"\nRequired:{Config.Version}");
+        }
         Config = config;
-        GlobalConfig = config;
     }
 
     public override void Load(bool hotReload)
     {
+        Instance = this; 
+
         _bot = new PRBot(options =>
         {
             options.Token = Config.Token;
@@ -54,21 +65,15 @@ public class Cs2TelegramPlugin : BasePlugin, IPluginConfig<TelegramCfg>
 
     private void Telegram_OnLogError(Exception ex, long? id)
     {
-        Console.ForegroundColor = ConsoleColor.Red;
-        string errorMsg = $"{DateTime.Now}:{ex}";
-        Console.WriteLine(errorMsg);
-        Console.ResetColor();
+        Logger.LogError(ex.ToString());
     }
 
     private void Telegram_OnLogCommon(string msg, PRBot.TelegramEvents typeEvent, ConsoleColor color)
     {
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        string message = $"{DateTime.Now}:{msg}";
-        Console.WriteLine(message);
-        Console.ResetColor();
+        Logger.LogInformation(msg);
     }
 
-    void HandlerInit(PRTelegramBot.Core.PRBot tg)
+    void HandlerInit(PRBot tg)
     {
         if (tg.Handler != null)
         {
@@ -79,4 +84,6 @@ public class Cs2TelegramPlugin : BasePlugin, IPluginConfig<TelegramCfg>
             tg.Handler.Router.OnMissingCommand += CommonEvents.OnMissingCommand;
         }
     }
+
+
 }

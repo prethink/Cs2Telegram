@@ -2,6 +2,7 @@
 using CounterStrikeSharp.API.Core;
 using Cs2Telegram.Enums;
 using Cs2Telegram.Models;
+using Microsoft.Extensions.Logging;
 using PRTelegramBot.Extensions;
 using PRTelegramBot.Helpers.TG;
 using PRTelegramBot.Models;
@@ -20,6 +21,26 @@ namespace Cs2Telegram
 {
     public static class Helper
     {
+        public static void SendAdminsMessage(ITelegramBotClient botClient, string message, OptionMessage options = null)
+        {
+            var admins = Cs2TelegramPlugin.Instance.Config.Admins;
+            Task task = Task.Run(async () =>
+            {
+                try
+                {
+                    foreach (var item in admins)
+                    {
+                        await PRTelegramBot.Helpers.Message.Send(botClient, item, message, options);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Cs2TelegramPlugin.Instance.Logger.LogError(ex.ToString());
+                }
+            });
+        }
+
+
         public static void SendMessage(ITelegramBotClient botClient, Update update, string msg, OptionMessage options = null)
         {
             SendMessage(botClient, update.GetChatId(),msg, options);
@@ -35,7 +56,7 @@ namespace Cs2Telegram
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    Cs2TelegramPlugin.Instance.Logger.LogError(ex.ToString());
                 }
             });
         }
@@ -50,7 +71,7 @@ namespace Cs2Telegram
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    Cs2TelegramPlugin.Instance.Logger.LogError(ex.ToString());
                 }
             });
         }
@@ -97,9 +118,10 @@ namespace Cs2Telegram
         public static List<IInlineContent> GetServerCommandsItems()
         {
             var inlineMenuItems = new List<IInlineContent>();
-            if (Cs2TelegramPlugin.GlobalConfig.ServerCommandsMenuItems.Count > 0)
+            var config = Cs2TelegramPlugin.Instance.Config;
+            if (config.ServerCommandsMenuItems.Count > 0)
             {
-                foreach (var command in Cs2TelegramPlugin.GlobalConfig.ServerCommandsMenuItems.Where(command => !string.IsNullOrWhiteSpace(command)))
+                foreach (var command in config.ServerCommandsMenuItems.Where(command => !string.IsNullOrWhiteSpace(command)))
                 {
                     var commandItem = new InlineCallback<ServerExecuteTCommand>(command, HeaderCommand.ExecuteServerCommand, new ServerExecuteTCommand(command));
                     inlineMenuItems.Add(commandItem);

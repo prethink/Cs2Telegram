@@ -16,5 +16,7 @@ namespace Cs2Telegram
         [JsonPropertyName("ClearUpdatesOnStart")] public bool ClearUpdatesOnStart { get; set; } = true;
         [JsonPropertyName("BotId")] public int BotId { get; set; } = 0;
         [JsonPropertyName("ServerCommandsMenuItems")] public List<string> ServerCommandsMenuItems { get; set; } = new List<string>();
+        [JsonPropertyName("NotifyAdminOnConnectUser")] public bool NotifyAdminOnConnectUser { get; set; } = true;
+        [JsonPropertyName("ConfigVersion")] public override int Version { get; set; } = 2;
     }
 }

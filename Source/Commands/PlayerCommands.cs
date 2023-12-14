@@ -17,6 +17,7 @@ using Telegram.Bot;
 using PRTelegramBot.Extensions;
 using PRTelegramBot.Models.CallbackCommands;
 using CounterStrikeSharp.API.Modules.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace Cs2Telegram.Commands
 {
@@ -136,6 +137,7 @@ namespace Cs2Telegram.Commands
                     {
                         msg = $"Server kicked {player.PlayerName}";
                         Server.ExecuteCommand($"kickid {player.UserId}");
+                        Cs2TelegramPlugin.Instance.Logger.LogInformation($"TelegramUser [{update.GetInfoUser()}] kicked player '{player.PlayerName}'");
                     }
 
                     Helper.EditMessage(botClient, update, msg, options);
