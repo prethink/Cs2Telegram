@@ -21,7 +21,7 @@ Tested on Windows server 2022 and ubuntu 22.
 - Send server command *(Only for admins)
 - Send server message *(Only for admins)
 - Notify admin if player connected to server (setting NotifyAdminOnConnectUser in Cs2Telegram.json)
-- Create Custom menu
+- Create custom menu with message and web links
 - Player can send a message to the administrators of the server on Telegram.
 
 
@@ -51,12 +51,30 @@ If you want the bot to be used only by you, add your Telegram user ID to the "Wh
 #### Configuration
 path - ..\csgo\addons\counterstrikesharp\configs\plugins\Cs2Telegram\Cs2Telegram.json     
 
-Token - Key for interacting with the bot.       
-Admins - List of administrators.       
-WhiteListUsers - List of users who can use the bot. If the value is empty, all users can use the bot.       
-ClearUpdatesOnStart - Clears commands that were invoked when the bot was not running.       
-BotId - Unique identifier of the bot. May be required if multiple bots are used in the same application.  
-ServerCommandsMenuItems - List command for inline buttons        
+{
+  "Token": "", - Key for interacting with the bot.     
+  "Admins": [], - List of administrators.       
+  "WhiteListUsers": [], - List of users who can use the bot. If the value is empty, all users can use the bot.       
+  "ClearUpdatesOnStart": true, - Clears commands that were invoked when the bot was not running.       
+  "BotId": 0, - Unique identifier of the bot. May be required if multiple bots are used in the same application.  
+  "ServerCommandsMenuItems": ["bot_add", "bot_kick"], - List command for inline buttons 
+  "NotifyAdminOnConnectUser": true, - If true notify admins on connect new player on server
+  "ShowCustomMenu": false, - If true show custom menu
+  "CustomMenu": { 
+    "ButtonName": "Custom Menu", - Name menu item in main menu
+    "Message": "Custom Message", - Message in menu
+    "Column": 1, - Count column in web links
+    "WebMenuItems": [
+      {
+        "Name": "Google", - Name menu item 
+        "Url": "Https://google.com"  - Link menu item 
+      }
+    ]
+  },
+  "ConfigVersion": 3
+}
+
+     
    
 # The result of the bot's work
 
