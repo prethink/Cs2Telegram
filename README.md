@@ -80,7 +80,6 @@ path - ..\csgo\addons\counterstrikesharp\configs\plugins\Cs2Telegram\Cs2Telegram
     ]
   },
   "ConfigVersion": 4
-  "ConfigVersion": 3
 }
 ```
      
