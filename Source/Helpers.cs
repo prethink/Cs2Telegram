@@ -1,5 +1,6 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Commands;
 using Cs2Telegram.Enums;
 using Cs2Telegram.Models;
 using Microsoft.Extensions.Logging;
@@ -39,7 +40,6 @@ namespace Cs2Telegram
                 }
             });
         }
-
 
         public static void SendMessage(ITelegramBotClient botClient, Update update, string msg, OptionMessage options = null)
         {
@@ -111,6 +111,10 @@ namespace Cs2Telegram
             {
                 menu.Add(Constants.ADMIN_MENU_BUTTON);
             }
+            if(Cs2TelegramPlugin.Instance.Config.CustomMenu.IsValid() && Cs2TelegramPlugin.Instance.Config.ShowCustomMenu)
+            {
+                menu.Add(Cs2TelegramPlugin.Instance.Config.CustomMenu.ButtonName);
+            }
 
             return MenuGenerator.ReplyKeyboard(1, menu, true, Constants.MAIN_MENU_BUTTON);
         }
@@ -172,7 +176,12 @@ namespace Cs2Telegram
         }
 
 
-
+        public static string GetFullMessage(this CommandInfo info)
+        {
+            return string.Join(" ", Enumerable.Range(1, info.ArgCount)
+            .Select(i => info.GetArg(i))
+            .Where(arg => !string.IsNullOrWhiteSpace(arg))) ?? "No reason given.";
+        }
 
     }
 }

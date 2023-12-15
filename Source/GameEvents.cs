@@ -16,15 +16,12 @@ namespace Cs2Telegram
         {
             if(!Config.NotifyAdminOnConnectUser)
                 return HookResult.Continue;
-            
-            if (@event.Userid == null || !@event.Userid.IsValid || @event.Userid.IsBot)
+
+            if (@event.Bot)
                 return HookResult.Continue;
 
-            Server.NextFrame(() =>
-            {
-                string playerName = @event.Userid.PlayerName;
-                Helper.SendAdminsMessage(_bot.botClient, $"Player {playerName} connected to server");
-            });
+            string playerName = @event.Name;
+            Helper.SendAdminsMessage(_bot.botClient, $"Player {playerName} connected to server");
 
             return HookResult.Continue;
         }

@@ -16,20 +16,21 @@ using Cs2Telegram.TelegramEvents;
 using System.Text.Json.Serialization;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using Cs2Telegram.Commands;
 
 namespace Cs2Telegram;
 
 public partial class Cs2TelegramPlugin : BasePlugin, IPluginConfig<TelegramCfg>
 {
     public override string ModuleName => "Cs2Telegram";
-    public override string ModuleVersion => "0.2.3";
+    public override string ModuleVersion => "0.3.0";
     public override string ModuleAuthor => "PreThink";
 
     private PRBot _bot;
 
     public TelegramCfg Config { get; set; } = new TelegramCfg();
     public static Cs2TelegramPlugin Instance { get; private set; }
-    private string _logsPath = "";
+
     public void OnConfigParsed(TelegramCfg config)
     {
         if (config.Version < Config.Version)
@@ -42,10 +43,13 @@ public partial class Cs2TelegramPlugin : BasePlugin, IPluginConfig<TelegramCfg>
         Config = config;
     }
 
+    public Cs2TelegramPlugin()
+    {
+        Instance = this;
+    }
+
     public override void Load(bool hotReload)
     {
-        Instance = this; 
-
         _bot = new PRBot(options =>
         {
             options.Token = Config.Token;
@@ -61,6 +65,10 @@ public partial class Cs2TelegramPlugin : BasePlugin, IPluginConfig<TelegramCfg>
         // Start the bot
         _bot.Start();
         HandlerInit(_bot);
+        if(Config?.CustomMenu?.IsValid() == true && Config.ShowCustomMenu)
+        {
+            _bot.Handler.Router.RegisterReplyCommand(Config.CustomMenu.ButtonName, CommonCommands.CustomMenu);
+        }
     }
 
     private void Telegram_OnLogError(Exception ex, long? id)
