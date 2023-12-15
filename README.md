@@ -60,18 +60,26 @@ path - ..\csgo\addons\counterstrikesharp\configs\plugins\Cs2Telegram\Cs2Telegram
   "BotId": 0, - Unique identifier of the bot. May be required if multiple bots are used in the same application.  
   "ServerCommandsMenuItems": ["bot_add", "bot_kick"], - List command for inline buttons 
   "NotifyAdminOnConnectUser": true, - If true notify admins on connect new player on server
+  "ColumnMainMenu": 2, - Count column in main menu
+  "CustomCommandsEnabled": true, - enable or no custom commands
   "ShowCustomMenu": false, - If true show custom menu
-  "CustomMenu": { 
-    "ButtonName": "Custom Menu", - Name menu item in main menu
-    "Message": "Custom Message", - Message in menu
-    "Column": 1, - Count column in web links
-    "WebMenuItems": [
+  "CustomCommands": { - 
+    "Commands": [
       {
-        "Name": "Google", - Name menu item 
-        "Url": "Https://google.com"  - Link menu item 
+        "ButtonName": "Custom Menu",
+        "Message": "Custom Message",
+        "AddInMainMenu": true,
+        "Column": 1,
+        "WebMenuItems": [
+          {
+            "Name": "Google",
+            "Url": "Https://google.com"
+          }
+        ]
       }
     ]
   },
+  "ConfigVersion": 4
   "ConfigVersion": 3
 }
 ```
