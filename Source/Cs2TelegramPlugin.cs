@@ -23,7 +23,7 @@ namespace Cs2Telegram;
 public partial class Cs2TelegramPlugin : BasePlugin, IPluginConfig<TelegramCfg>
 {
     public override string ModuleName => "Cs2Telegram";
-    public override string ModuleVersion => "0.3.0";
+    public override string ModuleVersion => "0.3.1";
     public override string ModuleAuthor => "PreThink";
 
     private PRBot _bot;
@@ -65,10 +65,7 @@ public partial class Cs2TelegramPlugin : BasePlugin, IPluginConfig<TelegramCfg>
         // Start the bot
         _bot.Start();
         HandlerInit(_bot);
-        if(Config?.CustomMenu?.IsValid() == true && Config.ShowCustomMenu)
-        {
-            _bot.Handler.Router.RegisterReplyCommand(Config.CustomMenu.ButtonName, CommonCommands.CustomMenu);
-        }
+        Helper.RegisterCustomCommands(_bot);
     }
 
     private void Telegram_OnLogError(Exception ex, long? id)
