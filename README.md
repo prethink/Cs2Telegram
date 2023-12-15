@@ -51,6 +51,7 @@ If you want the bot to be used only by you, add your Telegram user ID to the "Wh
 #### Configuration
 path - ..\csgo\addons\counterstrikesharp\configs\plugins\Cs2Telegram\Cs2Telegram.json     
 
+```json
 {
   "Token": "", - Key for interacting with the bot.     
   "Admins": [], - List of administrators.       
@@ -73,7 +74,7 @@ path - ..\csgo\addons\counterstrikesharp\configs\plugins\Cs2Telegram\Cs2Telegram
   },
   "ConfigVersion": 3
 }
-
+```
      
    
 # The result of the bot's work
