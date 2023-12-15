@@ -20,6 +20,9 @@ Tested on Windows server 2022 and ubuntu 22.
 - View players info and actions *(Only for admins)
 - Send server command *(Only for admins)
 - Send server message *(Only for admins)
+- Notify admin if player connected to server (setting NotifyAdminOnConnectUser in Cs2Telegram.json)
+- Create Custom menu
+- Player can send a message to the administrators of the server on Telegram.
 
 
 ### Bot Commands:
@@ -32,6 +35,9 @@ Tested on Windows server 2022 and ubuntu 22.
 - Server message *(Only for admins)
 -  Players info *(Only for admins)
    * Actions with players
+
+### Commands in server
+!tgreport [message] - Send a message to the administrators of the server on Telegram.
 
 ### Startup Instructions
 1. Create a new bot on BotFather and obtain the token. [Create Telegram Chatbot](https://sendpulse.com/knowledge-base/chatbot/telegram/create-telegram-chatbot)
