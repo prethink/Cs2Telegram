@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using Cs2Telegram.Enums;
 using Cs2Telegram.Models;
 using Microsoft.Extensions.Logging;
+using PRTelegramBot.Core;
 using PRTelegramBot.Extensions;
 using PRTelegramBot.Helpers.TG;
 using PRTelegramBot.Models;
@@ -93,16 +94,18 @@ namespace Cs2Telegram
 
         public static ReplyKeyboardMarkup GenerateOnlyMenu(this ITelegramBotClient botClient, long userId)
         {
+            var config = Cs2TelegramPlugin.Instance.Config;
             var menu = new List<string>();
             if (botClient.IsAdmin(userId))
             {
                 menu.Add(Constants.ADMIN_MENU_BUTTON);
             }
-            return MenuGenerator.ReplyKeyboard(1, menu, true, Constants.MAIN_MENU_BUTTON);
+            return MenuGenerator.ReplyKeyboard(config.ColumnMainMenu > 0 ? config.ColumnMainMenu : 1, menu, true, Constants.MAIN_MENU_BUTTON);
         }
 
         public static ReplyKeyboardMarkup GenerateCommonMenu(this ITelegramBotClient botClient, long userId)
         {
+            var config = Cs2TelegramPlugin.Instance.Config;
             int playersCount = Utilities.GetPlayers().Count;
             var menu = new List<string>();
             menu.Add(Constants.STATUS_BUTTON);
@@ -111,12 +114,22 @@ namespace Cs2Telegram
             {
                 menu.Add(Constants.ADMIN_MENU_BUTTON);
             }
-            if(Cs2TelegramPlugin.Instance.Config.CustomMenu.IsValid() && Cs2TelegramPlugin.Instance.Config.ShowCustomMenu)
+
+            if (config.CustomCommandsEnabled)
             {
-                menu.Add(Cs2TelegramPlugin.Instance.Config.CustomMenu.ButtonName);
+                if(config.CustomCommands?.Commands?.Count > 0)
+                {
+                    foreach (var command in config?.CustomCommands?.Commands)
+                    {
+                        if(command.IsValid() && command.AddInMainMenu)
+                        {
+                            menu.Add(command.ButtonName);
+                        }
+                    }
+                }
             }
 
-            return MenuGenerator.ReplyKeyboard(1, menu, true, Constants.MAIN_MENU_BUTTON);
+            return MenuGenerator.ReplyKeyboard(config.ColumnMainMenu > 0 ? config.ColumnMainMenu : 1, menu, true, Constants.MAIN_MENU_BUTTON);
         }
 
         public static List<IInlineContent> GetServerCommandsItems()
@@ -175,12 +188,66 @@ namespace Cs2Telegram
             }
         }
 
-
         public static string GetFullMessage(this CommandInfo info)
         {
             return string.Join(" ", Enumerable.Range(1, info.ArgCount)
             .Select(i => info.GetArg(i))
             .Where(arg => !string.IsNullOrWhiteSpace(arg))) ?? "No reason given.";
+        }
+
+        public static async Task RegisterCustomCommands(PRBot bot)
+        {
+            var config = Cs2TelegramPlugin.Instance.Config;
+            var commands = config?.CustomCommands?.Commands;
+            if(!config.CustomCommandsEnabled)
+                return;
+
+            if (commands?.Count > 0)
+            {
+                foreach (var command in commands)
+                {
+                    if(command.IsValid())
+                    {
+                        var method = async (ITelegramBotClient botClient, Update update) =>
+                        {
+                            string message = command.Message;
+                            var option = new OptionMessage();
+                            if (command.WebMenuItems.Count > 0)
+                            {
+                                var inlineMenu = new List<IInlineContent>();
+                                foreach (var item in command.WebMenuItems)
+                                {
+                                    inlineMenu.Add(new InlineURL(item.Name, item.Url));
+                                }
+
+                                var menuItems = MenuGenerator.InlineButtons(command.Column > 0 ? command.Column : 1, inlineMenu);
+                                var menu = MenuGenerator.InlineKeyboard(menuItems);
+                                option.MenuInlineKeyboardMarkup = menu;
+                            }
+                            SendMessage(botClient, update, message, option);
+                        };
+
+
+                        if(command.ButtonName.StartsWith("/"))
+                        {
+                            bot.Handler.Router.RegisterReplyCommand(command.ButtonName, method);
+                            Cs2TelegramPlugin.Instance.Logger.LogInformation($"Register new slash command {command.ButtonName}");
+                        }
+                        else
+                        {
+                            bot.Handler.Router.RegisterReplyCommand(command.ButtonName, method);
+                            Cs2TelegramPlugin.Instance.Logger.LogInformation($"Register new reply command {command.ButtonName}");
+                        }
+                        if(command.AddInMainMenu)
+                        {
+                            Cs2TelegramPlugin.Instance.Logger.LogInformation($"Add menu item {command.ButtonName} in main menu");
+                        }
+                        
+
+                    }
+                }
+            }
+
         }
 
     }
