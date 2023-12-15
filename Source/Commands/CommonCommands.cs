@@ -11,6 +11,9 @@ using CounterStrikeSharp.API.Modules.Cvars;
 using PRTelegramBot.Models;
 using PRTelegramBot.Helpers.TG;
 using PRTelegramBot.Extensions;
+using Cs2Telegram.Models;
+using PRTelegramBot.Models.Interface;
+using PRTelegramBot.Models.InlineButtons;
 
 namespace Cs2Telegram.Commands
 {
@@ -112,6 +115,26 @@ namespace Cs2Telegram.Commands
                     Console.WriteLine(ex);
                 }
             });
+        }
+
+        public static async Task CustomMenu(ITelegramBotClient botClient, Update update)
+        {
+            CustomMenu custom = Cs2TelegramPlugin.Instance.Config.CustomMenu;
+            string message = custom.Message;
+            var option = new OptionMessage();
+            if(custom.WebMenuItems.Count > 0)
+            {
+                var inlineMenu = new List<IInlineContent>();
+                foreach (var item in custom.WebMenuItems)
+                {
+                    inlineMenu.Add(new InlineURL(item.Name, item.Url));
+                }
+
+                var menuItems = MenuGenerator.InlineButtons(custom.Column > 0 ? custom.Column : 1, inlineMenu);
+                var menu = MenuGenerator.InlineKeyboard(menuItems);
+                option.MenuInlineKeyboardMarkup = menu;
+            }
+            Helper.SendMessage(botClient, update, message, option);
         }
     }
 }
