@@ -6,8 +6,8 @@ Tested on Windows server 2022 and ubuntu 22.
 *For proper operation, it is required to disable the hibernate mode on the server. To do this, specify __sv_hibernate_when_empty 0__ in the server config.*
 
 ## Requirements
- - [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp/tree/main)
- - [PRTelegramBot](https://github.com/prethink/PRTelegramBot)
+ - [CounterStrikeSharp v1.0.296](https://github.com/roflmuffin/CounterStrikeSharp/tree/main)
+ - [PRTelegramBot v0.7.6](https://github.com/prethink/PRTelegramBot)
  - [Telegram.Bot](https://github.com/TelegramBots/Telegram.Bot)   
 
 
