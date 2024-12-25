@@ -1,19 +1,11 @@
 ﻿using CounterStrikeSharp.API;
-using PRTelegramBot.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Telegram.Bot.Types;
-using Telegram.Bot;
 using CounterStrikeSharp.API.Modules.Cvars;
-using PRTelegramBot.Models;
-using PRTelegramBot.Helpers.TG;
+using PRTelegramBot.Attributes;
 using PRTelegramBot.Extensions;
-using Cs2Telegram.Models;
-using PRTelegramBot.Models.Interface;
-using PRTelegramBot.Models.InlineButtons;
+using PRTelegramBot.Models;
+using System.Net;
+using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace Cs2Telegram.Commands
 {
@@ -34,7 +26,7 @@ namespace Cs2Telegram.Commands
             Server.NextFrame(async () =>
             {
                 var options = new OptionMessage();
-                options.MenuReplyKeyboardMarkup = botClient.GenerateCommonMenu(update.GetChatId());
+                options.MenuReplyKeyboardMarkup = await botClient.GenerateCommonMenu(update.GetChatId());
                 await PRTelegramBot.Helpers.Message.Send(botClient, update, "Main menu", options);
             });
         }
@@ -51,15 +43,15 @@ namespace Cs2Telegram.Commands
                     var allCount = botCount + userCount;
                     var maxPlayers = Server.MaxPlayers;
                     string mapName = Server.MapName;
-                    
+
                     var serverTime = Server.EngineTime;
-                    
+
                     string hostname = "";
 
                     var hostnameCvar = ConVar.Find("hostname");
                     var gameTypeCvar = ConVar.Find("game_type");
                     var gameModeCvar = ConVar.Find("game_mode");
-                    string gametype = Helper.GetGameModeWithGameType(gameTypeCvar.GetPrimitiveValue<int>(), gameModeCvar.GetPrimitiveValue<int>()); 
+                    string gametype = Helper.GetGameModeWithGameType(gameTypeCvar.GetPrimitiveValue<int>(), gameModeCvar.GetPrimitiveValue<int>());
                     if (hostnameCvar != null)
                     {
                         hostname = hostnameCvar.StringValue;
@@ -74,7 +66,7 @@ namespace Cs2Telegram.Commands
                         $"🕛 Server Uptime: {TimeSpan.FromSeconds(serverTime).ToReadableString()}  ";
 
                     var options = new OptionMessage();
-                    options.MenuReplyKeyboardMarkup = botClient.GenerateCommonMenu(update.GetChatId());
+                    options.MenuReplyKeyboardMarkup = await botClient.GenerateCommonMenu(update.GetChatId());
 
                     await PRTelegramBot.Helpers.Message.Send(botClient, update, msg, options);
                 }
@@ -95,7 +87,7 @@ namespace Cs2Telegram.Commands
                     var players = Utilities.GetPlayers();
                     string message = "Players on server:";
                     var options = new OptionMessage();
-                    options.MenuReplyKeyboardMarkup = botClient.GenerateCommonMenu(update.GetChatId());
+                    options.MenuReplyKeyboardMarkup = await botClient.GenerateCommonMenu(update.GetChatId());
                     if (players.Count == 0)
                     {
                         await PRTelegramBot.Helpers.Message.Send(botClient, update, "No players :(", options);
@@ -104,7 +96,7 @@ namespace Cs2Telegram.Commands
                     {
                         foreach (var player in players)
                         {
-                            message += $"\n {(player.IsBot ? "🤖" : "👦")} {player.PlayerName}";
+                            message += $"\n {(player.IsBot ? "🤖" : "👦")} {WebUtility.HtmlEncode(player.PlayerName)}";
                         }
 
                         await PRTelegramBot.Helpers.Message.Send(botClient, update, message, options);

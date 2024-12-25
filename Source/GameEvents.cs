@@ -1,11 +1,6 @@
-﻿using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Core;
+﻿using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net;
 
 namespace Cs2Telegram
 {
@@ -21,7 +16,7 @@ namespace Cs2Telegram
                 return HookResult.Continue;
 
             string playerName = @event.Name;
-            Helper.SendAdminsMessage(_bot.botClient, $"Player {playerName} connected to server");
+            Helper.SendAdminsMessage(_bot.botClient, $"Player {WebUtility.HtmlEncode(playerName)} connected to server");
 
             return HookResult.Continue;
         }

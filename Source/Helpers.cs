@@ -1,20 +1,16 @@
 ﻿using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using Cs2Telegram.Enums;
 using Cs2Telegram.Models;
 using Microsoft.Extensions.Logging;
 using PRTelegramBot.Core;
 using PRTelegramBot.Extensions;
-using PRTelegramBot.Helpers.TG;
+using PRTelegramBot.InlineButtons;
+using PRTelegramBot.Interfaces;
 using PRTelegramBot.Models;
 using PRTelegramBot.Models.InlineButtons;
-using PRTelegramBot.Models.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PRTelegramBot.Models.TCommands;
+using PRTelegramBot.Utils;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -44,10 +40,10 @@ namespace Cs2Telegram
 
         public static void SendMessage(ITelegramBotClient botClient, Update update, string msg, OptionMessage options = null)
         {
-            SendMessage(botClient, update.GetChatId(),msg, options);
+            SendMessage(botClient, update.GetChatId(), msg, options);
         }
 
-        public static void SendMessage(ITelegramBotClient botClient,long userId, string msg, OptionMessage options = null)
+        public static void SendMessage(ITelegramBotClient botClient, long userId, string msg, OptionMessage options = null)
         {
             Task task = Task.Run(async () =>
             {
@@ -92,36 +88,36 @@ namespace Cs2Telegram
             return formatted;
         }
 
-        public static ReplyKeyboardMarkup GenerateOnlyMenu(this ITelegramBotClient botClient, long userId)
+        public static async Task<ReplyKeyboardMarkup> GenerateOnlyMenu(this ITelegramBotClient botClient, long userId)
         {
             var config = Cs2TelegramPlugin.Instance.Config;
             var menu = new List<string>();
-            if (botClient.IsAdmin(userId))
+            if (await botClient.IsAdmin(userId))
             {
                 menu.Add(Constants.ADMIN_MENU_BUTTON);
             }
             return MenuGenerator.ReplyKeyboard(config.ColumnMainMenu > 0 ? config.ColumnMainMenu : 1, menu, true, Constants.MAIN_MENU_BUTTON);
         }
 
-        public static ReplyKeyboardMarkup GenerateCommonMenu(this ITelegramBotClient botClient, long userId)
+        public static async Task<ReplyKeyboardMarkup> GenerateCommonMenu(this ITelegramBotClient botClient, long userId)
         {
             var config = Cs2TelegramPlugin.Instance.Config;
             int playersCount = Utilities.GetPlayers().Count;
             var menu = new List<string>();
             menu.Add(Constants.STATUS_BUTTON);
             menu.Add($"{Constants.PLAYERS_BUTTON} ({playersCount})");
-            if (botClient.IsAdmin(userId))
+            if (await botClient.IsAdmin(userId))
             {
                 menu.Add(Constants.ADMIN_MENU_BUTTON);
             }
 
             if (config.CustomCommandsEnabled)
             {
-                if(config.CustomCommands?.Commands?.Count > 0)
+                if (config.CustomCommands?.Commands?.Count > 0)
                 {
                     foreach (var command in config?.CustomCommands?.Commands)
                     {
-                        if(command.IsValid() && command.AddInMainMenu)
+                        if (command.IsValid() && command.AddInMainMenu)
                         {
                             menu.Add(command.ButtonName);
                         }
@@ -140,6 +136,18 @@ namespace Cs2Telegram
             {
                 foreach (var command in config.ServerCommandsMenuItems.Where(command => !string.IsNullOrWhiteSpace(command)))
                 {
+                    if (IsWorkshopChangeLevelCommand(command, out var level))
+                    {
+                        RegisterWorkShopChangeLevel(level, ref inlineMenuItems);
+                        continue;
+                    }
+
+                    if (IsChangeLevelCommand(command, out level))
+                    {
+                        RegisterChangeLevel(level, ref inlineMenuItems);
+                        continue;
+                    }
+
                     var commandItem = new InlineCallback<ServerExecuteTCommand>(command, HeaderCommand.ExecuteServerCommand, new ServerExecuteTCommand(command));
                     inlineMenuItems.Add(commandItem);
                 }
@@ -147,11 +155,11 @@ namespace Cs2Telegram
             return inlineMenuItems;
         }
 
-        public static ReplyKeyboardMarkup GenerateAdminMenu(this ITelegramBotClient botClient, long userId)
+        public static async Task<ReplyKeyboardMarkup> GenerateAdminMenu(this ITelegramBotClient botClient, long userId)
         {
             var menu = new List<string>();
 
-            if (botClient.IsAdmin(userId))
+            if (await botClient.IsAdmin(userId))
             {
                 menu.Add(Constants.SERVER_COMMAND_BUTTON);
                 menu.Add(Constants.SERVER_SEND_MESSAGE_BUTTON);
@@ -166,7 +174,7 @@ namespace Cs2Telegram
         }
         public static string GetGameModeWithGameType(int gametype, int gamemode)
         {
-            //https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive/Game_Modes
+            // https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive/Game_Modes
 
             string[][] games = new string[7][];
 
@@ -182,7 +190,7 @@ namespace Cs2Telegram
             {
                 return games[gametype][gamemode];
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return "Unknown game type with game mode";
             }
@@ -195,18 +203,18 @@ namespace Cs2Telegram
             .Where(arg => !string.IsNullOrWhiteSpace(arg))) ?? "No reason given.";
         }
 
-        public static async Task RegisterCustomCommands(PRBot bot)
+        public static async Task RegisterCustomCommands(PRBotBase bot)
         {
             var config = Cs2TelegramPlugin.Instance.Config;
             var commands = config?.CustomCommands?.Commands;
-            if(!config.CustomCommandsEnabled)
+            if (!config.CustomCommandsEnabled)
                 return;
 
             if (commands?.Count > 0)
             {
                 foreach (var command in commands)
                 {
-                    if(command.IsValid())
+                    if (command.IsValid())
                     {
                         var method = async (ITelegramBotClient botClient, Update update) =>
                         {
@@ -228,27 +236,55 @@ namespace Cs2Telegram
                         };
 
 
-                        if(command.ButtonName.StartsWith("/"))
+                        if (command.ButtonName.StartsWith("/"))
                         {
-                            bot.Handler.Router.RegisterReplyCommand(command.ButtonName, method);
+                            bot.Register.AddReplyCommand(command.ButtonName, method);
                             Cs2TelegramPlugin.Instance.Logger.LogInformation($"Register new slash command {command.ButtonName}");
                         }
                         else
                         {
-                            bot.Handler.Router.RegisterReplyCommand(command.ButtonName, method);
+                            bot.Register.AddReplyCommand(command.ButtonName, method);
                             Cs2TelegramPlugin.Instance.Logger.LogInformation($"Register new reply command {command.ButtonName}");
                         }
-                        if(command.AddInMainMenu)
+                        if (command.AddInMainMenu)
                         {
                             Cs2TelegramPlugin.Instance.Logger.LogInformation($"Add menu item {command.ButtonName} in main menu");
                         }
-                        
+
 
                     }
                 }
             }
-
         }
 
+        public static void RegisterChangeLevel(string level, ref List<IInlineContent> list)
+        {
+            list.Add(new InlineCallback<StringTCommand>($"Change {level}", HeaderCommand.ChangeLevel, new StringTCommand(level)));
+        }
+
+        public static void RegisterWorkShopChangeLevel(string level, ref List<IInlineContent> list)
+        {
+            list.Add(new InlineCallback<StringTCommand>($"Change {level}", HeaderCommand.WorkshopChangeLevel, new StringTCommand(level)));
+        }
+
+        public static bool IsChangeLevelCommand(string command, out string level)
+        {
+            level = "";
+            var isChangeLevel = command.Contains("changelevel", StringComparison.OrdinalIgnoreCase);
+            if(isChangeLevel)
+                level = command.Split(' ')[1];
+
+            return isChangeLevel;
+        }
+
+        public static bool IsWorkshopChangeLevelCommand(string command, out string level)
+        {
+            level = "";
+            var isChangeLevel = command.Contains("ds_workshop_changelevel", StringComparison.OrdinalIgnoreCase);
+            if (isChangeLevel)
+                level = command.Split(' ')[1];
+
+            return isChangeLevel;
+        }
     }
 }
