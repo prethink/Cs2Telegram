@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Telegram.Bot.Types;
-using Telegram.Bot;
+﻿using CounterStrikeSharp.API;
 using PRTelegramBot.Extensions;
 using PRTelegramBot.Models;
-using CounterStrikeSharp.API;
+using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace Cs2Telegram.TelegramEvents
 {
@@ -19,20 +14,20 @@ namespace Cs2Telegram.TelegramEvents
             Helper.SendMessage(botClient, update.GetChatId(), msg);
         }
 
-        public static async Task WrongMessage(ITelegramBotClient botClient, Update update)
+        public static async Task WrongMessage(PRTelegramBot.Models.EventsArgs.BotEventArgs arg)
         {
             string msg = "Wrong Message";
-            Helper.SendMessage(botClient, update.GetChatId(), msg);
+            Helper.SendMessage(arg.BotClient, arg.Update.GetChatId(), msg);
         }
 
-        public static async Task OnMissingCommand(ITelegramBotClient botClient, Update update)
+        public static async Task OnMissingCommand(PRTelegramBot.Models.EventsArgs.BotEventArgs arg)
         {
-            Server.NextFrame(() =>
+            Server.NextFrame(async () =>
             {
                 string msg = "Missing Command";
                 var options = new OptionMessage();
-                options.MenuReplyKeyboardMarkup = botClient.GenerateCommonMenu(update.GetChatId());
-                Helper.SendMessage(botClient, update.GetChatId(), msg, options);
+                options.MenuReplyKeyboardMarkup = await arg.BotClient.GenerateCommonMenu(arg.Update.GetChatId());
+                Helper.SendMessage(arg.BotClient, arg.Update.GetChatId(), msg, options);
             });
         }
     }

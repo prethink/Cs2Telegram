@@ -1,13 +1,8 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
-using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net;
 
 namespace Cs2Telegram
 {
@@ -20,7 +15,7 @@ namespace Cs2Telegram
             var message = commandInfo.GetFullMessage();
             Server.NextFrame(() =>
             {
-                message = $"Player: {player.PlayerName}\n" +
+                message = $"Player: {WebUtility.HtmlEncode(player.PlayerName)}\n" +
                 $"IP:{player?.IpAddress}\n" +
                 $"Message: {message}";
                 Helper.SendAdminsMessage(_bot.botClient, message);

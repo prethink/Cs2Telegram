@@ -1,17 +1,12 @@
 ﻿using PRTelegramBot.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cs2Telegram.Enums
 {
     [InlineCommand]
     public enum HeaderCommand
     {
-        SelectMap = 0,
-        ExecuteServerCommand = 1,
+        SelectMap = 100,
+        ExecuteServerCommand,
         PlayerKick,
         PlayerChangeTeam,
         PlayerGiveItem,
@@ -20,5 +15,7 @@ namespace Cs2Telegram.Enums
         PlayerInfo,
         PlayerKill,
         PlayerInfoList,
+        ChangeLevel,
+        WorkshopChangeLevel
     }
 }

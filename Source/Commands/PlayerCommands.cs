@@ -1,23 +1,17 @@
 ﻿using CounterStrikeSharp.API;
 using Cs2Telegram.Enums;
-using Cs2Telegram.Models;
 using Cs2Telegram.TelegramEvents;
-using PRTelegramBot.Attributes;
-using PRTelegramBot.Helpers.TG;
-using PRTelegramBot.Models.InlineButtons;
-using PRTelegramBot.Models.Interface;
-using PRTelegramBot.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Telegram.Bot.Types;
-using Telegram.Bot;
-using PRTelegramBot.Extensions;
-using PRTelegramBot.Models.CallbackCommands;
-using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
+using PRTelegramBot.Attributes;
+using PRTelegramBot.Extensions;
+using PRTelegramBot.Interfaces;
+using PRTelegramBot.Models;
+using PRTelegramBot.Models.CallbackCommands;
+using PRTelegramBot.Models.InlineButtons;
+using PRTelegramBot.Utils;
+using System.Net;
+using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace Cs2Telegram.Commands
 {
@@ -29,14 +23,14 @@ namespace Cs2Telegram.Commands
         [InlineCallbackHandler<HeaderCommand>(HeaderCommand.PlayerInfoList)]
         public static async Task PlayersInfo(ITelegramBotClient botClient, Update update)
         {
-            if (!botClient.IsAdmin(update.GetChatId()))
+            if (!(await botClient.IsAdmin(update.GetChatId())))
             {
                 await CommonEvents.AccessDenied(botClient, update);
                 return;
             }
 
             var inlineMenuItems = new List<IInlineContent>();
-            Server.NextFrame(() =>
+            Server.NextFrame(async () =>
             {
                 var players = Utilities.GetPlayers();
                 foreach (var player in players)
@@ -54,10 +48,10 @@ namespace Cs2Telegram.Commands
                 }
                 else
                 {
-                    options.MenuReplyKeyboardMarkup = botClient.GenerateOnlyMenu(update.GetChatId());
+                    options.MenuReplyKeyboardMarkup = await botClient.GenerateOnlyMenu(update.GetChatId());
                 }
                 var command = InlineCallback<EntityTCommand<int>>.GetCommandByCallbackOrNull(update.CallbackQuery?.Data ?? "");
-                if(command != null)
+                if (command != null)
                 {
                     Helper.EditMessage(botClient, update, msg, options);
                 }
@@ -72,7 +66,7 @@ namespace Cs2Telegram.Commands
         [InlineCallbackHandler<HeaderCommand>(HeaderCommand.PlayerInfo)]
         public static async Task PlayerInfoHandler(ITelegramBotClient botClient, Update update)
         {
-            if (!botClient.IsAdmin(update.GetChatId()))
+            if (!(await botClient.IsAdmin(update.GetChatId())))
             {
                 await CommonEvents.AccessDenied(botClient, update);
                 return;
@@ -89,8 +83,8 @@ namespace Cs2Telegram.Commands
                     var player = Utilities.GetPlayerFromUserid(userId);
                     if (player != null && player.IsValid)
                     {
-                        msg = 
-                        $"Player name:{player.PlayerName}\n" +
+                        msg =
+                        $"Player name:{WebUtility.HtmlEncode(player.PlayerName)}\n" +
                         $"Clan name: {player.ClanName}\n" +
                         $"Score: {player.Score}\n" +
                         $"IP: {player.IpAddress ?? ""}\n" +
@@ -104,12 +98,12 @@ namespace Cs2Telegram.Commands
                         var kickCommandItem = new InlineCallback<EntityTCommand<int>>($"Kick", HeaderCommand.PlayerKick, new EntityTCommand<int>(player.UserId != null ? player.UserId.Value : -1));
                         var BackCommandItem = new InlineCallback<EntityTCommand<int>>($"Back", HeaderCommand.PlayerInfoList, new EntityTCommand<int>(-1));
                         //var killCommandItem = new InlineCallback<EntityTCommand<int>>($"Kill", HeaderCommand.PlayerKill, new EntityTCommand<int>(player.UserId != null ? player.UserId.Value : -1));
-                        var menuTeamButtons = MenuGenerator.InlineButtons(2,new List<IInlineContent> { kickCommandItem, BackCommandItem });
+                        var menuTeamButtons = MenuGenerator.InlineButtons(2, new List<IInlineContent> { kickCommandItem, BackCommandItem });
                         var menu = MenuGenerator.InlineKeyboard(menuTeamButtons);
                         options.MenuInlineKeyboardMarkup = menu;
 
                     }
- 
+
                     Helper.EditMessage(botClient, update, msg, options);
                 });
             }
@@ -118,7 +112,7 @@ namespace Cs2Telegram.Commands
         [InlineCallbackHandler<HeaderCommand>(HeaderCommand.PlayerKick)]
         public static async Task PlayerKickHandler(ITelegramBotClient botClient, Update update)
         {
-            if (!botClient.IsAdmin(update.GetChatId()))
+            if (!(await botClient.IsAdmin(update.GetChatId())))
             {
                 await CommonEvents.AccessDenied(botClient, update);
                 return;
@@ -135,7 +129,7 @@ namespace Cs2Telegram.Commands
                     var player = Utilities.GetPlayerFromUserid(userId);
                     if (player != null && player.IsValid)
                     {
-                        msg = $"Server kicked {player.PlayerName}";
+                        msg = $"Server kicked {WebUtility.HtmlEncode(player.PlayerName)}";
                         Server.ExecuteCommand($"kickid {player.UserId}");
                         Cs2TelegramPlugin.Instance.Logger.LogInformation($"TelegramUser [{update.GetInfoUser()}] kicked player '{player.PlayerName}'");
                     }

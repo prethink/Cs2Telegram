@@ -1,32 +1,19 @@
-﻿using CounterStrikeSharp.API.Core.Attributes.Registration;
-using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API;
-using PRTelegramBot.Attributes;
-using PRTelegramBot.Core;
-using Telegram.Bot.Types;
-using Telegram.Bot;
-using PRTelegramBot.Models;
-using PRTelegramBot.Configs;
-using System.Text.Json;
-using Newtonsoft.Json;
-using File = System.IO.File;
-using CounterStrikeSharp.API.Modules.Memory;
-using PRTelegramBot.Helpers;
+﻿using CounterStrikeSharp.API.Core;
+using Cs2Telegram.Enums;
+using Cs2Telegram.InlineInstance;
 using Cs2Telegram.TelegramEvents;
-using System.Text.Json.Serialization;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
-using Cs2Telegram.Commands;
+using PRTelegramBot.Core;
 
 namespace Cs2Telegram;
 
 public partial class Cs2TelegramPlugin : BasePlugin, IPluginConfig<TelegramCfg>
 {
     public override string ModuleName => "Cs2Telegram";
-    public override string ModuleVersion => "0.3.1";
+    public override string ModuleVersion => "0.3.2";
     public override string ModuleAuthor => "PreThink";
 
-    private PRBot _bot;
+    private PRBotBase _bot;
 
     public TelegramCfg Config { get; set; } = new TelegramCfg();
     public static Cs2TelegramPlugin Instance { get; private set; }
@@ -50,45 +37,44 @@ public partial class Cs2TelegramPlugin : BasePlugin, IPluginConfig<TelegramCfg>
 
     public override void Load(bool hotReload)
     {
-        _bot = new PRBot(options =>
-        {
-            options.Token = Config.Token;
-            options.WhiteListUsers = Config.WhiteListUsers;
-            options.Admins = Config.Admins;
-            options.ClearUpdatesOnStart = Config.ClearUpdatesOnStart;
-            options.BotId = Config.BotId;
-        });
+        _bot = new PRBotBuilder(Config.Token)
+            .AddUsersWhiteList(Config.WhiteListUsers)
+            .AddAdmins(Config.Admins)
+            .SetBotId(Config.BotId)
+            .SetClearUpdatesOnStart(Config.ClearUpdatesOnStart)
+            .AddInlineClassHandler(HeaderCommand.ChangeLevel, typeof(ChangeLevel))
+            .AddInlineClassHandler(HeaderCommand.WorkshopChangeLevel, typeof(WorkshopChangeLevel))
+            .Build();
+
         // Subscribe to basic logs
-        _bot.OnLogCommon += Telegram_OnLogCommon;
+        _bot.Events.OnCommonLog += Events_OnCommonLog; ;
         // Subscribe to error logs
-        _bot.OnLogError += Telegram_OnLogError;
+        _bot.Events.OnErrorLog += Events_OnErrorLog; ;
         // Start the bot
         _bot.Start();
         HandlerInit(_bot);
         Helper.RegisterCustomCommands(_bot);
     }
 
-    private void Telegram_OnLogError(Exception ex, long? id)
+    private async Task Events_OnErrorLog(PRTelegramBot.Models.EventsArgs.ErrorLogEventArgs e)
     {
-        Logger.LogError(ex.ToString());
+        Logger.LogError(e.Exception.ToString());
     }
 
-    private void Telegram_OnLogCommon(string msg, PRBot.TelegramEvents typeEvent, ConsoleColor color)
+    private async Task Events_OnCommonLog(PRTelegramBot.Models.EventsArgs.CommonLogEventArgs arg)
     {
-        Logger.LogInformation(msg);
+        Logger.LogInformation(arg.Message);
     }
 
-    void HandlerInit(PRBot tg)
+    void HandlerInit(PRBotBase bot)
     {
-        if (tg.Handler != null)
+        if (bot.Handler != null)
         {
             //Обработка не правильный тип сообщений
-            tg.Handler.Router.OnWrongTypeMessage += CommonEvents.WrongMessage;
+            bot.Events.OnWrongTypeMessage += CommonEvents.WrongMessage;
 
             //Обработка пропущенной  команды
-            tg.Handler.Router.OnMissingCommand += CommonEvents.OnMissingCommand;
+            bot.Events.OnMissingCommand += CommonEvents.OnMissingCommand;
         }
     }
-
-
 }
