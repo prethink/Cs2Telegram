@@ -8,8 +8,7 @@ Tested on Windows server 2022 and ubuntu 22.
 ## Requirements
  - [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp/tree/main)
  - [PRTelegramBot](https://github.com/prethink/PRTelegramBot)
- - [Telegram.Bot](https://github.com/TelegramBots/Telegram.Bot)
- - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)       
+ - [Telegram.Bot](https://github.com/TelegramBots/Telegram.Bot)   
 
 
 ### Bot Functionality
